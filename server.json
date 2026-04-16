@@ -1,0 +1,55 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-registry.json",
+  "name": "io.github.aaaa-nexus/aaaa-nexus-mcp",
+  "description": "AAAA-Nexus MCP — 113 tools for AI trust, safety, compliance, agent swarm coordination, escrow, inference, and verifiable randomness. Backed by the atomadic.tech API.",
+  "status": "active",
+  "repository": {
+    "url": "https://github.com/AAAA-Nexus/aaaa-nexus-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "websiteUrl": "https://atomadic.tech",
+  "documentationUrl": "https://atomadic.tech/docs/mcp",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "aaaa-nexus-mcp",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" },
+      "runtimeHint": "python",
+      "runtimeArguments": [
+        { "type": "named", "name": "-m", "value": "aaaa_nexus_mcp", "isRequired": true }
+      ],
+      "environmentVariables": [
+        {
+          "name": "AAAA_NEXUS_API_KEY",
+          "description": "API key from https://atomadic.tech/pay — optional (free-tier tools work without one)",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "categories": [
+    "ai-safety",
+    "security",
+    "compliance",
+    "agent-infrastructure",
+    "cryptography",
+    "finance"
+  ],
+  "keywords": [
+    "trust",
+    "hallucination-detection",
+    "prompt-injection",
+    "eu-ai-act",
+    "nist",
+    "ratchetgate",
+    "aegis",
+    "vanguard",
+    "escrow",
+    "verifiable-randomness",
+    "x402",
+    "a2a"
+  ]
+}

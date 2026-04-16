@@ -1,0 +1,20 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      apiKey:
+        type: string
+        title: AAAA-Nexus API Key
+        description: Optional. Get one at https://atomadic.tech/pay. Free-tier tools work without a key.
+    required: []
+  commandFunction: |-
+    (config) => ({
+      command: "python",
+      args: ["-m", "aaaa_nexus_mcp"],
+      env: {
+        AAAA_NEXUS_API_KEY: config.apiKey || ""
+      }
+    })
+build:
+  dockerfile: Dockerfile
