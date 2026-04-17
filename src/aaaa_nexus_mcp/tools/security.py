@@ -1,4 +1,4 @@
-"""Security tools — prompt scanning, threat scoring, shield, signatures."""
+"""Security tools -- prompt scanning, threat scoring, shield, signatures."""
 
 from __future__ import annotations
 

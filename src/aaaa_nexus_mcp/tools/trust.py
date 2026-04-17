@@ -1,4 +1,4 @@
-"""Trust oracle tools — hallucination, trust phase, entropy, decay, scoring."""
+"""Trust oracle tools -- hallucination, trust phase, entropy, decay, scoring."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_hallucination_oracle(text: str) -> str:
-        """Check text for hallucination risk. Returns eps_kl divergence, verdict, confidence. $0.040/call."""
+        """Check text for hallucination risk. Returns POLICY_EPSILON divergence, verdict, confidence. $0.040/call."""
         return _fmt(await get_client().post("/v1/oracle/hallucination", {"text": text}))
 
     @mcp.tool()  # type: ignore[misc]
@@ -45,3 +45,4 @@ def register(mcp: object, get_client: Callable) -> None:
     async def nexus_trust_history(agent_id: str) -> str:
         """Get up to 100 epochs of trust score trajectory (TCM-101). $0.040/call."""
         return _fmt(await get_client().post("/v1/trust/history", {"agent_id": agent_id}))
+

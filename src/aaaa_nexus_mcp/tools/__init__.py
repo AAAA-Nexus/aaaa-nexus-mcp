@@ -40,12 +40,14 @@ def _fmt(result: dict) -> str:
 
 def register_all_tools(mcp: Any, get_client: Callable) -> None:
     from aaaa_nexus_mcp.tools.aegis import register as r_aegis
+    from aaaa_nexus_mcp.tools.codex_local import register as r_codex
     from aaaa_nexus_mcp.tools.compliance import register as r_compliance
     from aaaa_nexus_mcp.tools.control_plane import register as r_control
     from aaaa_nexus_mcp.tools.discovery import register as r_discovery
     from aaaa_nexus_mcp.tools.ecosystem import register as r_ecosystem
     from aaaa_nexus_mcp.tools.escrow import register as r_escrow
     from aaaa_nexus_mcp.tools.inference import register as r_inference
+    from aaaa_nexus_mcp.tools.lora import register as r_lora
     from aaaa_nexus_mcp.tools.ratchetgate import register as r_ratchet
     from aaaa_nexus_mcp.tools.reputation import register as r_reputation
     from aaaa_nexus_mcp.tools.security import register as r_security
@@ -53,6 +55,7 @@ def register_all_tools(mcp: Any, get_client: Callable) -> None:
     from aaaa_nexus_mcp.tools.swarm import register as r_swarm
     from aaaa_nexus_mcp.tools.system import register as r_system
     from aaaa_nexus_mcp.tools.trust import register as r_trust
+    from aaaa_nexus_mcp.tools.uep import register as r_uep
     from aaaa_nexus_mcp.tools.vanguard import register as r_vanguard
     from aaaa_nexus_mcp.tools.verirand import register as r_verirand
 
@@ -73,5 +76,8 @@ def register_all_tools(mcp: Any, get_client: Callable) -> None:
         r_control,
         r_ecosystem,
         r_verirand,
+        r_codex,
+        r_lora,
+        r_uep,
     ):
         reg(mcp, get_client)

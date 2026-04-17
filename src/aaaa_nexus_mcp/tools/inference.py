@@ -35,7 +35,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_text_sentiment(text: str) -> str:
-        """Analyze sentiment — positive, negative, or neutral. $0.020/call."""
+        """Analyze sentiment -- positive, negative, or neutral. $0.020/call."""
         return _fmt(await get_client().post("/v1/text/sentiment", {"text": text}))
 
     @mcp.tool()  # type: ignore[misc]

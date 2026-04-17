@@ -1,4 +1,4 @@
-"""Agent swarm tools — registration, topology, messaging, planning."""
+"""Agent swarm tools -- registration, topology, messaging, planning."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ def register(mcp: object, get_client: Callable) -> None:
     async def nexus_agent_register(
         agent_id: int, name: str, capabilities: list[str], endpoint: str
     ) -> str:
-        """Register an agent in the swarm. agent_id must be multiple of 324 (G_18). Free."""
+        """Register an agent in the swarm. agent_id must be multiple of 324 (BLOCK_DIM). Free."""
         return _fmt(
             await get_client().post(
                 "/v1/agents/register",
@@ -30,7 +30,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_agent_topology() -> str:
-        """Get the global swarm topology — all registered agents and connections. $0.008/call."""
+        """Get the global swarm topology -- all registered agents and connections. $0.008/call."""
         return _fmt(await get_client().get("/v1/agents/topology"))
 
     @mcp.tool()  # type: ignore[misc]
@@ -44,7 +44,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_agent_intent_classify(text: str) -> str:
-        """Classify intent of text — returns top-3 intents with confidence scores. $0.020/call."""
+        """Classify intent of text -- returns top-3 intents with confidence scores. $0.020/call."""
         return _fmt(await get_client().post("/v1/agents/intent-classify", {"text": text}))
 
     @mcp.tool()  # type: ignore[misc]
@@ -66,7 +66,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_agent_contradiction(statement_a: str, statement_b: str) -> str:
-        """NLI fact-checker — detect contradictions between two statements. $0.020/call."""
+        """NLI fact-checker -- detect contradictions between two statements. $0.020/call."""
         return _fmt(
             await get_client().post(
                 "/v1/agents/contradiction", {"statement_a": statement_a, "statement_b": statement_b}
@@ -102,3 +102,4 @@ def register(mcp: object, get_client: Callable) -> None:
     async def nexus_swarm_inbox(agent_id: str) -> str:
         """Check an agent's swarm message inbox. $0.008/call."""
         return _fmt(await get_client().get("/v1/swarm/inbox", agent_id=agent_id))
+

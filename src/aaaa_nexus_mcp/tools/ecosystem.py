@@ -1,4 +1,4 @@
-"""Ecosystem coordination tools — consensus, quota, certification, saga, memory fence."""
+"""Ecosystem coordination tools -- consensus, quota, certification, saga, memory fence."""
 
 from __future__ import annotations
 
@@ -11,14 +11,14 @@ from aaaa_nexus_mcp.tools import _fmt, handle_errors
 def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
-    async def nexus_consensus_create(quorum_mode: str, participants: list[str]) -> str:
+    async def nexus_consensus_create(quorum_mode: str, agents: list[str]) -> str:
         """Create a multi-agent consensus session (CSN-100). $0.040/call."""
         return _fmt(
             await get_client().post(
                 "/v1/consensus/session",
                 {
                     "quorum_mode": quorum_mode,
-                    "participants": participants,
+                    "agents": agents,
                 },
             )
         )
@@ -48,13 +48,14 @@ def register(mcp: object, get_client: Callable) -> None:
 
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
-    async def nexus_quota_create(total_budget: int, children: list[dict[str, Any]]) -> str:
+    async def nexus_quota_create(
+        root_agent: str, total_tokens: int, children: list[dict[str, Any]] | None = None
+    ) -> str:
         """Create hierarchical token budget tree (QTA-100). $0.040/call."""
-        return _fmt(
-            await get_client().post(
-                "/v1/quota/tree", {"total_budget": total_budget, "children": children}
-            )
-        )
+        body: dict[str, Any] = {"root_agent": root_agent, "total_tokens": total_tokens}
+        if children:
+            body["children"] = children
+        return _fmt(await get_client().post("/v1/quota/tree", body))
 
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
@@ -124,9 +125,21 @@ def register(mcp: object, get_client: Callable) -> None:
 
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
-    async def nexus_memory_fence_create(namespace: str) -> str:
+    async def nexus_memory_fence_create(
+        agent_id: str,
+        tenant_id: str,
+        isolation_level: str = "strict",
+        session_id: str = "",
+    ) -> str:
         """Create HMAC namespace boundary for cross-tenant isolation (MFN-100). $0.040/call."""
-        return _fmt(await get_client().post("/v1/memory/fence", {"namespace": namespace}))
+        body: dict[str, Any] = {
+            "agent_id": agent_id,
+            "tenant_id": tenant_id,
+            "isolation_level": isolation_level,
+        }
+        if session_id:
+            body["session_id"] = session_id
+        return _fmt(await get_client().post("/v1/memory/fence", body))
 
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
@@ -155,7 +168,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_data_validate_json(data: dict[str, Any], schema: dict[str, Any]) -> str:
-        """Validate JSON data against a schema — returns error paths. $0.012/call."""
+        """Validate JSON data against a schema -- returns error paths. $0.012/call."""
         return _fmt(
             await get_client().post("/v1/data/validate-json", {"data": data, "schema": schema})
         )
@@ -200,7 +213,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_billing_outcome(task_id: str, success: bool, metric_value: float) -> str:
-        """Outcome-based billing — pay only for measurably successful tasks (PAY-509). $0.040/call."""
+        """Outcome-based billing -- pay only for measurably successful tasks (PAY-509). $0.040/call."""
         return _fmt(
             await get_client().post(
                 "/v1/billing/outcome",

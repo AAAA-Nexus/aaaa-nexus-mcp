@@ -21,7 +21,7 @@ from aaaa_nexus_mcp.errors import (
 )
 from aaaa_nexus_mcp.tools import _fmt, handle_errors
 
-# ── Config tests ─────────────────────────────────────────────────────────────
+# -- Config tests -------------------------------------------------------------
 
 
 class TestConfig:
@@ -29,6 +29,7 @@ class TestConfig:
         cfg = get_config()
         assert cfg.base_url == "https://atomadic.tech"
         assert cfg.timeout == 20.0
+        assert cfg.autoguard is True  # on by default
 
     def test_config_from_env(self, monkeypatch):
         monkeypatch.setenv("AAAA_NEXUS_BASE_URL", "https://test.local")
@@ -39,8 +40,18 @@ class TestConfig:
         assert cfg.api_key == "test-key"
         assert cfg.timeout == 5.0
 
+    def test_autoguard_disabled_by_env(self, monkeypatch):
+        monkeypatch.setenv("AAAA_NEXUS_AUTOGUARD", "false")
+        cfg = get_config()
+        assert cfg.autoguard is False
 
-# ── Error tests ──────────────────────────────────────────────────────────────
+    def test_autoguard_enabled_by_env(self, monkeypatch):
+        monkeypatch.setenv("AAAA_NEXUS_AUTOGUARD", "true")
+        cfg = get_config()
+        assert cfg.autoguard is True
+
+
+# -- Error tests --------------------------------------------------------------
 
 
 class TestErrors:
@@ -65,13 +76,14 @@ class TestErrors:
             raise_for_status(500)
 
 
-# ── Client tests ─────────────────────────────────────────────────────────────
+# -- Client tests -------------------------------------------------------------
 
 
 class TestClient:
     @pytest.fixture
     def mock_client(self):
-        return NexusAPIClient(base_url="https://test.local", api_key="key-123")
+        # autoguard=False in tests -- avoids guard API calls in unit tests
+        return NexusAPIClient(base_url="https://test.local", api_key="key-123", autoguard=False)
 
     @pytest.mark.asyncio
     async def test_get_success(self, mock_client):
@@ -122,8 +134,45 @@ class TestClient:
         with pytest.raises(NexusTimeoutError):
             await mock_client.get("/v1/test")
 
+    @pytest.mark.asyncio
+    async def test_autoguard_annotates_response(self):
+        """autoguard=True attaches _guard block with hallucination + drift."""
+        client = NexusAPIClient(base_url="https://test.local", api_key="k", autoguard=True)
+        main_resp = httpx.Response(
+            200, json={"score": 0.9}, request=httpx.Request("POST", "https://test.local/v1/trust/score")
+        )
+        guard_resp = httpx.Response(
+            200,
+            json={"verdict": "clean", "POLICY_EPSILON": 1e-6},
+            request=httpx.Request("POST", "https://test.local/v1/oracle/hallucination"),
+        )
+        # Main call + both guard calls all return via the same mock
+        client._client = AsyncMock()
+        client._client.post = AsyncMock(side_effect=[main_resp, guard_resp, guard_resp])
+        result = await client.post("/v1/trust/score", {"agent_id": "a1"})
+        assert result["score"] == 0.9
+        assert "_guard" in result
+        assert "hallucination" in result["_guard"]
+        assert "drift" in result["_guard"]
+        assert "guarded_at" in result["_guard"]
 
-# ── Tool decorator tests ────────────────────────────────────────────────────
+    @pytest.mark.asyncio
+    async def test_autoguard_skipped_for_guard_paths(self):
+        """autoguard is NOT triggered for guard endpoints themselves."""
+        client = NexusAPIClient(base_url="https://test.local", api_key="k", autoguard=True)
+        guard_resp = httpx.Response(
+            200,
+            json={"verdict": "clean"},
+            request=httpx.Request("POST", "https://test.local/v1/oracle/hallucination"),
+        )
+        client._client = AsyncMock()
+        client._client.post = AsyncMock(return_value=guard_resp)
+        result = await client.post("/v1/oracle/hallucination", {"text": "test"})
+        assert "_guard" not in result  # no recursion
+        assert client._client.post.call_count == 1  # exactly one call
+
+
+# -- Tool decorator tests ----------------------------------------------------
 
 
 class TestToolHelpers:
@@ -168,3 +217,4 @@ class TestToolHelpers:
 
         result = json.loads(await ok_tool())
         assert result["ok"] is True
+

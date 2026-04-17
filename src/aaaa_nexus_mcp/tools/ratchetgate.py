@@ -11,7 +11,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_ratchet_register(agent_id: int) -> str:
-        """Start a new RatchetGate session with 47-epoch cycle. agent_id must be multiple of 324 (G_18). $0.008/call."""
+        """Start a new RatchetGate session with 47-epoch cycle. agent_id must be multiple of 324 (BLOCK_DIM). $0.008/call."""
         return _fmt(await get_client().post("/v1/ratchet/register", {"agent_id": agent_id}))
 
     @mcp.tool()  # type: ignore[misc]
@@ -31,3 +31,4 @@ def register(mcp: object, get_client: Callable) -> None:
     async def nexus_ratchet_status(session_id: str) -> str:
         """Get session epoch + remaining calls. $0.004/call."""
         return _fmt(await get_client().get(f"/v1/ratchet/status/{session_id}"))
+

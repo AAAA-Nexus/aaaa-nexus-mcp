@@ -1,0 +1,60 @@
+{
+  "name": "aaaa-nexus-mcp",
+  "description": "AAAA-Nexus MCP plugin for trust, UEP orchestration, safety, compliance, agent economy, and verifiable randomness tools.",
+  "author": {
+    "name": "Atomadic",
+    "email": "dev@atomadic.tech",
+    "url": "https://atomadic.tech"
+  },
+  "homepage": "https://atomadic.tech/docs/mcp",
+  "repository": "https://github.com/AAAA-Nexus/aaaa-nexus-mcp",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "ai-safety",
+    "trust",
+    "uep",
+    "trusted-rag",
+    "lora",
+    "x402",
+    "a2a",
+    "multi-agent",
+    "verifiable-randomness"
+  ],
+  "agents": [
+    ".github/agents"
+  ],
+  "skills": [
+    ".github/skills/*"
+  ],
+  "hooks": [
+    ".github/hooks/*"
+  ],
+  "instructions": [
+    ".github/instructions"
+  ],
+  "interface": {
+    "displayName": "AAAA-Nexus MCP",
+    "shortDescription": "140 API tools for trustworthy autonomous agents.",
+    "longDescription": "AAAA-Nexus MCP exposes the Atomadic trust, safety, UEP orchestration, compliance, agent economy, LoRA, and verifiable randomness API surface through MCP. The Rust Worker backend remains the enforcement authority; MCP clients receive ergonomic tool wrappers and public-safe structured envelopes.",
+    "developerName": "Atomadic",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Write",
+      "MCP",
+      "Security",
+      "Agent Orchestration"
+    ],
+    "websiteURL": "https://atomadic.tech",
+    "privacyPolicyURL": "https://atomadic.tech/legal",
+    "termsOfServiceURL": "https://atomadic.tech/legal",
+    "defaultPrompt": [
+      "Run UEP preflight for this agent task.",
+      "Check this output with Nexus trust gates.",
+      "Generate a public-safe trace certificate."
+    ],
+    "brandColor": "#10B981"
+  },
+  "version": "0.1.0"
+}

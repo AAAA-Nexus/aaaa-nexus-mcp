@@ -1,4 +1,4 @@
-"""Agent discovery tools — search, recommend, registry."""
+"""Agent discovery tools -- search, recommend, registry."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Compliance tools — EU AI Act, NIST, fairness, audit, drift, incidents."""
+"""Compliance tools -- EU AI Act, NIST, fairness, audit, drift, incidents."""
 
 from __future__ import annotations
 

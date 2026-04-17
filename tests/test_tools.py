@@ -1,4 +1,4 @@
-"""Tests for MCP tool modules — registration, dispatch, and error handling.
+"""Tests for MCP tool modules -- registration, dispatch, and error handling.
 
 Tests a representative sample of all 16 tool categories by mocking
 the NexusAPIClient and verifying that registered tool functions:
@@ -18,7 +18,7 @@ import pytest
 from aaaa_nexus_mcp.errors import NexusAuthError, NexusServerError
 from aaaa_nexus_mcp.tools import register_all_tools
 
-# ── Fixtures ─────────────────────────────────────────────────────────────────
+# -- Fixtures -----------------------------------------------------------------
 
 
 class FakeMCP:
@@ -56,7 +56,7 @@ def mcp_and_client():
     return fake_mcp, client
 
 
-# ── Registration tests ───────────────────────────────────────────────────────
+# -- Registration tests -------------------------------------------------------
 
 
 class TestToolRegistration:
@@ -78,7 +78,7 @@ class TestToolRegistration:
             assert asyncio.iscoroutinefunction(fn), f"{name} is not async"
 
 
-# ── System tools ─────────────────────────────────────────────────────────────
+# -- System tools -------------------------------------------------------------
 
 
 class TestSystemTools:
@@ -105,7 +105,7 @@ class TestSystemTools:
         assert result["name"] == "nexus"
 
 
-# ── Trust tools ──────────────────────────────────────────────────────────────
+# -- Trust tools --------------------------------------------------------------
 
 
 class TestTrustTools:
@@ -132,7 +132,7 @@ class TestTrustTools:
         assert result["phase"] == 0.98
 
 
-# ── Security tools ───────────────────────────────────────────────────────────
+# -- Security tools -----------------------------------------------------------
 
 
 class TestSecurityTools:
@@ -158,7 +158,7 @@ class TestSecurityTools:
         assert result["algorithm"] == "ML-DSA"
 
 
-# ── Inference tools ──────────────────────────────────────────────────────────
+# -- Inference tools ----------------------------------------------------------
 
 
 class TestInferenceTools:
@@ -191,7 +191,7 @@ class TestInferenceTools:
         assert result["sentiment"] == "positive"
 
 
-# ── Compliance tools ─────────────────────────────────────────────────────────
+# -- Compliance tools ---------------------------------------------------------
 
 
 class TestComplianceTools:
@@ -210,7 +210,7 @@ class TestComplianceTools:
         assert result["logged"] is True
 
 
-# ── Escrow tools ─────────────────────────────────────────────────────────────
+# -- Escrow tools -------------------------------------------------------------
 
 
 class TestEscrowTools:
@@ -224,7 +224,7 @@ class TestEscrowTools:
         assert result["escrow_id"] == "e1"
 
 
-# ── Swarm tools ──────────────────────────────────────────────────────────────
+# -- Swarm tools --------------------------------------------------------------
 
 
 class TestSwarmTools:
@@ -247,7 +247,7 @@ class TestSwarmTools:
         assert len(result["steps"]) == 1
 
 
-# ── RatchetGate tools ────────────────────────────────────────────────────────
+# -- RatchetGate tools --------------------------------------------------------
 
 
 class TestRatchetGateTools:
@@ -259,7 +259,7 @@ class TestRatchetGateTools:
         assert result["session_id"] == "s1"
 
 
-# ── AEGIS tools ──────────────────────────────────────────────────────────────
+# -- AEGIS tools --------------------------------------------------------------
 
 
 class TestAegisTools:
@@ -271,7 +271,7 @@ class TestAegisTools:
         assert result["allowed"] is True
 
 
-# ── Vanguard tools ───────────────────────────────────────────────────────────
+# -- Vanguard tools -----------------------------------------------------------
 
 
 class TestVanguardTools:
@@ -285,7 +285,7 @@ class TestVanguardTools:
         assert result["risk_score"] == 0.05
 
 
-# ── Ecosystem tools ─────────────────────────────────────────────────────────
+# -- Ecosystem tools ---------------------------------------------------------
 
 
 class TestEcosystemTools:
@@ -294,7 +294,7 @@ class TestEcosystemTools:
         mcp, client = mcp_and_client
         client.post.return_value = {"session_id": "cs1"}
         result = json.loads(
-            await mcp.tools["nexus_consensus_create"](quorum_mode="majority", participants=["a1", "a2"])
+            await mcp.tools["nexus_consensus_create"](quorum_mode="majority", agents=["a1", "a2"])
         )
         assert result["session_id"] == "cs1"
 
@@ -306,7 +306,7 @@ class TestEcosystemTools:
         assert result["recorded"] is True
 
 
-# ── VeriRand tools ───────────────────────────────────────────────────────────
+# -- VeriRand tools -----------------------------------------------------------
 
 
 class TestVeriRandTools:
@@ -318,7 +318,7 @@ class TestVeriRandTools:
         assert result["random_value"] == 42
 
 
-# ── Error handling through tools ─────────────────────────────────────────────
+# -- Error handling through tools ---------------------------------------------
 
 
 class TestToolErrorHandling:

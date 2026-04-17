@@ -32,7 +32,7 @@ class NexusAuthError(NexusError):
 
 
 class NexusPaymentRequired(NexusError):
-    """Payment required — x402 or credit-pack exhausted (402)."""
+    """Payment required -- x402 or credit-pack exhausted (402)."""
 
 
 class NexusRateLimited(NexusError):

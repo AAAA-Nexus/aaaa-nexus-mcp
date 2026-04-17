@@ -1,4 +1,4 @@
-"""Control plane tools — authorization, spending, lineage, contracts, federation."""
+"""Control plane tools -- authorization, spending, lineage, contracts, federation."""
 
 from __future__ import annotations
 

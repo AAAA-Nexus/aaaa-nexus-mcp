@@ -30,7 +30,7 @@ def register(mcp: object, get_client: Callable) -> None:
     @mcp.tool()  # type: ignore[misc]
     @handle_errors
     async def nexus_sla_report(sla_id: str, metric: str, value: float) -> str:
-        """Report an SLA metric — auto-detects breaches. $0.020/call."""
+        """Report an SLA metric -- auto-detects breaches. $0.020/call."""
         return _fmt(
             await get_client().post(
                 "/v1/sla/report", {"sla_id": sla_id, "metric": metric, "value": value}

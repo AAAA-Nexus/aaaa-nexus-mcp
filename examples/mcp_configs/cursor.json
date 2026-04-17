@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "aaaa-nexus": {
+      "command": "python",
+      "args": ["-m", "aaaa_nexus_mcp"],
+      "env": {
+        "AAAA_NEXUS_API_KEY": "an_your_key_here"
+      }
+    }
+  }
+}

@@ -28,6 +28,7 @@ def get_client() -> NexusAPIClient:
             base_url=cfg.base_url,
             api_key=cfg.api_key,
             timeout=cfg.timeout,
+            autoguard=cfg.autoguard,
         )
     return _client
 
