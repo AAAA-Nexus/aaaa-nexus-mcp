@@ -36,8 +36,7 @@ AAAA-Nexus does all of that at the HTTP layer. Bearer auth. JSON in, JSON out. E
 Four battle-tested system prompts that turn any LLM into a self-improving agent:
 
 - **DADA** — Delegator Atomadic Developer Agent. Routes, verifies, ships.
-- **Atomadic** — Intent interpreter that sharpens any user prompt into UEP-ready form.
-- **UEP** — Universal Enhancement Protocol orchestrator with sovereign invariants.
+- **Atomadic** — Intent interpreter that sharpens any user prompt into an actionable form.
 - **Autopoetic** — Self-healing feedback loop for drift-resistant agents.
 
 Drop any of them into `CLAUDE.md`, `.cursorrules`, or your system prompt. The agent starts calling `nexus_*` tools on the first turn.
@@ -46,7 +45,7 @@ Drop any of them into `CLAUDE.md`, `.cursorrules`, or your system prompt. The ag
 
 ## Section 3 — The trustless agent economy stack
 
-One base URL. Eight capabilities. Zero lock-in.
+One base URL. Seven capabilities. Zero lock-in.
 
 | Capability | What it gives you |
 |---|---|
@@ -54,14 +53,13 @@ One base URL. Eight capabilities. Zero lock-in.
 | **Shared LoRA loop** | Earn rewards contributing fixes; pull the community adapter |
 | **Trusted RAG** | Provenance-gated retrieval with SHA-256 receipts |
 | Sys primitives | Numerical invariants for agent self-governance |
-| UEP orchestration | Phase-gated multi-agent pipelines |
 | Compliance certs | EU AI Act, GDPR Art. 22, NIST AI-RMF |
 | Escrow + SLA | Outcome-based USDC billing with arbitration |
 | VeriRand | HMAC-proven randomness, on-chain VRF draws |
 
 ---
 
-## Section 4 — Eight capabilities you cannot get anywhere else
+## Section 4 — Seven capabilities you cannot get anywhere else
 
 ### 1. Trust oracles
 Hallucination verdict in one call. `/v1/oracle/hallucination` returns `POLICY_EPSILON` + `verdict`. No other API gives you this.
@@ -81,16 +79,13 @@ Every chunk gated on source allowlist, freshness, hallucination verdict, drift s
 ### 4. Sys primitives
 `trust_gate`, `lint_gate`, `chain_parity`, `friction_score`, `novelty_jump` — numerical invariants your agent uses to govern itself between calls.
 
-### 5. UEP orchestration
-Phase-gated pipelines with preflight, synthesis guards, trace certificates. Your multi-agent workflow becomes an auditable state machine.
-
-### 6. Compliance as a primitive
+### 5. Compliance as a primitive
 EU AI Act Annex IV conformity, GDPR Art. 22 explainability, NIST AI-RMF. One call each. Certificates chained to the lineage vault.
 
-### 7. Escrow + SLA
+### 6. Escrow + SLA
 Lock USDC, release on outcome proof, arbitrate disputes. Pay for what actually worked.
 
-### 8. VeriRand
+### 7. VeriRand
 Quantum-seeded RNG with HMAC proofs. VRF draws with on-chain verification. Your random numbers are actually random, and you can prove it.
 
 ---

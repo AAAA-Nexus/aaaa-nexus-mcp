@@ -55,7 +55,6 @@ def register_all_tools(mcp: Any, get_client: Callable) -> None:
     from aaaa_nexus_mcp.tools.swarm import register as r_swarm
     from aaaa_nexus_mcp.tools.system import register as r_system
     from aaaa_nexus_mcp.tools.trust import register as r_trust
-    from aaaa_nexus_mcp.tools.uep import register as r_uep
     from aaaa_nexus_mcp.tools.vanguard import register as r_vanguard
     from aaaa_nexus_mcp.tools.verirand import register as r_verirand
 
@@ -78,6 +77,5 @@ def register_all_tools(mcp: Any, get_client: Callable) -> None:
         r_verirand,
         r_codex,
         r_lora,
-        r_uep,
     ):
         reg(mcp, get_client)

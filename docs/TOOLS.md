@@ -50,19 +50,6 @@ The rewards flywheel. See [LORA_REWARDS.md](LORA_REWARDS.md).
 | `nexus_lora_adapter_current` | `GET /v1/lora/adapter/{lang}` | $0.010 |
 | `nexus_lora_reward_claim` | `POST /v1/lora/reward/claim` | $0.020 |
 
-## UEP Orchestration (6)
-
-Phase-gated multi-agent pipelines.
-
-| Tool | Endpoint |
-|---|---|
-| `nexus_uep_preflight` | `POST /v1/uep/preflight` |
-| `nexus_trusted_rag_augment` | `POST /v1/rag/augment` |
-| `nexus_synthesis_guard` | `POST /v1/uep/synthesis-guard` |
-| `nexus_aha_detect` | `POST /v1/uep/aha-detect` |
-| `nexus_autopoiesis_plan` | `POST /v1/uep/autopoiesis-plan` |
-| `nexus_uep_trace_certify` | `POST /v1/uep/trace-certify` |
-
 ## Trust Oracles (6), Security (8), Compliance (14), RatchetGate (4), AEGIS/VANGUARD (7), Agent Swarm (11), Discovery (3), Reputation (4), SLA (4), Escrow (5), Inference (8), Control Plane (10), Ecosystem (21), VeriRand (4)
 
 See the in-code registration sites for the full list:

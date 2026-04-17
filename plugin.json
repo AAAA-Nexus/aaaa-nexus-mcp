@@ -1,6 +1,6 @@
 {
   "name": "aaaa-nexus-mcp",
-  "description": "AAAA-Nexus MCP plugin for trust, UEP orchestration, safety, compliance, agent economy, and verifiable randomness tools.",
+  "description": "AAAA-Nexus MCP plugin for trust, safety, compliance, agent economy, and verifiable randomness tools.",
   "author": {
     "name": "Atomadic",
     "email": "dev@atomadic.tech",
@@ -13,7 +13,6 @@
     "mcp",
     "ai-safety",
     "trust",
-    "uep",
     "trusted-rag",
     "lora",
     "x402",
@@ -35,8 +34,8 @@
   ],
   "interface": {
     "displayName": "AAAA-Nexus MCP",
-    "shortDescription": "140 API tools for trustworthy autonomous agents.",
-    "longDescription": "AAAA-Nexus MCP exposes the Atomadic trust, safety, UEP orchestration, compliance, agent economy, LoRA, and verifiable randomness API surface through MCP. The Rust Worker backend remains the enforcement authority; MCP clients receive ergonomic tool wrappers and public-safe structured envelopes.",
+    "shortDescription": "134 API tools for trustworthy autonomous agents.",
+    "longDescription": "AAAA-Nexus MCP exposes the Atomadic trust, safety, compliance, agent economy, LoRA, and verifiable randomness API surface through MCP. The Rust Worker backend remains the enforcement authority; MCP clients receive ergonomic tool wrappers and public-safe structured envelopes.",
     "developerName": "Atomadic",
     "category": "Developer Tools",
     "capabilities": [
@@ -50,9 +49,9 @@
     "privacyPolicyURL": "https://atomadic.tech/legal",
     "termsOfServiceURL": "https://atomadic.tech/legal",
     "defaultPrompt": [
-      "Run UEP preflight for this agent task.",
+      "Run a trust + security check for this agent task.",
       "Check this output with Nexus trust gates.",
-      "Generate a public-safe trace certificate."
+      "Retrieve trusted RAG context for this question."
     ],
     "brandColor": "#10B981"
   },

@@ -55,7 +55,7 @@ const nexus = new NexusClient({ apiKey: process.env.AAAA_NEXUS_API_KEY });
 ```
 
 - Works in Node 18+, Bun, Deno (with `npm:` specifier), Cloudflare Workers.
-- Typed namespaces: `nexus.oracle`, `nexus.rag`, `nexus.lora`, `nexus.sys`, `nexus.uep`, `nexus.escrow`, `nexus.rng`.
+- Typed namespaces: `nexus.oracle`, `nexus.rag`, `nexus.lora`, `nexus.sys`, `nexus.escrow`, `nexus.rng`.
 - Escape hatch: `nexus.post(path, body)`, `nexus.get(path)`.
 - See [examples/typescript_quickstart.ts](../examples/typescript_quickstart.ts).
 

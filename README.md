@@ -96,10 +96,9 @@ See [examples/trusted_rag.py](examples/trusted_rag.py) for the full cycle includ
 | 2 | **Shared LoRA loop** | `/v1/lora/contribute`, `/v1/lora/reward/claim` | Earn rewards contributing fixes; pull the community adapter |
 | 3 | **Trusted RAG** | `/v1/rag/augment`, `/v1/aibom/drift` | Provenance-gated retrieval with receipts |
 | 4 | **Sys primitives** | `/v1/sys/trust_gate`, `/v1/sys/lint_gate`, `/v1/sys/chain_parity` | Numerical invariants for agent self-governance |
-| 5 | **UEP orchestration** | `/v1/uep/preflight`, `/v1/uep/synthesis-guard`, `/v1/uep/trace-certify` | Phase-gated multi-agent pipelines |
-| 6 | **Compliance certs** | `/v1/compliance/eu-ai-act`, `/v1/compliance/explain` | EU AI Act, GDPR Art. 22, NIST conformance |
-| 7 | **Escrow + SLA** | `/v1/escrow/create`, `/v1/sla/report` | Outcome-based USDC billing with arbitration |
-| 8 | **VeriRand** | `/v1/rng/quantum`, `/v1/vrf/draw` | HMAC-proven randomness, on-chain VRF draws |
+| 5 | **Compliance certs** | `/v1/compliance/eu-ai-act`, `/v1/compliance/explain` | EU AI Act, GDPR Art. 22, NIST conformance |
+| 6 | **Escrow + SLA** | `/v1/escrow/create`, `/v1/sla/report` | Outcome-based USDC billing with arbitration |
+| 7 | **VeriRand** | `/v1/rng/quantum`, `/v1/vrf/draw` | HMAC-proven randomness, on-chain VRF draws |
 
 Tools per category:
 
@@ -108,14 +107,14 @@ Tools per category:
 | System | 4 | Security | 8 |
 | Sys Primitives | 14 | Compliance | 14 |
 | LoRA Training | 7 | RatchetGate | 4 |
-| UEP Orchestration | 6 | AEGIS / VANGUARD | 7 |
+| Trusted RAG | 2 | AEGIS / VANGUARD | 7 |
 | Trust Oracles | 6 | Agent Swarm | 11 |
 | Discovery | 3 | Reputation | 4 |
 | SLA | 4 | Escrow | 5 |
 | Inference | 8 | Control Plane | 10 |
 | Ecosystem | 21 | VeriRand | 4 |
 
-**Total: 146 endpoints across 19 categories.** Full list: [docs/TOOLS.md](docs/TOOLS.md).
+**Total: 134 tools across 18 categories.** Full list: [docs/TOOLS.md](docs/TOOLS.md).
 
 ---
 
@@ -139,7 +138,6 @@ AAAA-Nexus ships curated system prompts that turn any LLM into a **self-improvin
 
 - `dada.system.md` — Delegator Atomadic Developer Agent (routes tasks, verifies in a separate lane)
 - `atomadic.system.md` — Intent interpreter & prompt refiner
-- `uep.system.md` — Universal Enhancement Protocol orchestrator
 - `autopoetic.system.md` — Self-healing feedback loop
 
 See [prompts/](prompts/) for the full catalogue. Drop any of them into your `CLAUDE.md`, `.cursorrules`, or system prompt field and the agent starts calling `nexus_*` tools automatically.
@@ -261,14 +259,14 @@ Claude Code MCP plugin providing access to the [AAAA-Nexus](https://atomadic.tec
 
 ## Features
 
-**146 endpoints** across 19 categories:
+**134 tools** across 18 categories:
 
 | Category | Tools | Highlights |
 |---|---|---|
 | System | 4 | Health, metrics, pricing, agent card |
 | Sys Primitives | 14 | Trust/lint gates, VQ memory, novelty & parity checks, budgets |
 | LoRA Training | 7 | Federated fix-capture, contribute, adapter pull, rewards |
-| UEP Orchestration | 6 | Preflight, trusted RAG, synthesis guard, AHA detect, trace certs |
+| Trusted RAG | 2 | Provenance-gated retrieval, AIBOM drift |
 | Trust Oracles | 6 | Hallucination detection, trust scoring, entropy |
 | Security | 8 | Prompt injection scan, threat scoring, PQC signatures |
 | Compliance | 14 | EU AI Act, NIST, fairness, audit, drift detection |
@@ -363,7 +361,7 @@ All tools are prefixed with `nexus_` to avoid collisions in Claude Code's flat t
 - `nexus_ratchet_register` — start a secure session
 - `nexus_agent_plan` — decompose a goal into steps
 
-Use primitive tools such as `nexus_trust_gate`, `nexus_friction_score`, and `nexus_lora_contribute` when you need one exact backend capability. Use orchestration tools such as `nexus_uep_preflight`, `nexus_trusted_rag_augment`, `nexus_synthesis_guard`, `nexus_aha_detect`, `nexus_autopoiesis_plan`, and `nexus_uep_trace_certify` when you want the Rust Worker to enforce the full UEP phase gates and return a public-safe evidence envelope.
+Use primitive tools such as `nexus_trust_gate`, `nexus_friction_score`, and `nexus_lora_contribute` when you need one exact backend capability. Compose them with your own agent logic to build phase-gated pipelines.
 
 ## Configuration
 

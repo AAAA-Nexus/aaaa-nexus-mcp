@@ -64,25 +64,16 @@ ctx = await c.post("/v1/rag/augment", {
 
 ---
 
-## Emitting a trace certificate
+## Lineage receipts
 
-Once you've used the retrieved context in a downstream output, certify the full chain:
+Every retrieval returns a `receipt_hash` per chunk. These hashes are tamper-evident and safe to embed in downstream artifacts (PRs, audit trails, compliance docs) as proof that the context was actually retrieved through the trusted pipeline:
 
 ```python
-cert = await c.post("/v1/uep/trace-certify", {
-    "final_verdict": "PASS",
-    "gate_results": [
-        {"gate": "rag_freshness", "verdict": "PASS"},
-        {"gate": "hallucination", "verdict": "PASS"},
-        {"gate": "drift", "verdict": "PASS"},
-    ],
-    "evidence_hashes": [r["receipt_hash"] for r in ctx["results"]],
-    "public_safe": True,
-    "public_safe_summary": "EU AI Act retrieval, 5 trusted chunks",
-})
+for r in ctx["results"]:
+    print(r["receipt_hash"], r["trust_score"], r["source"])
 ```
 
-The returned `cert_id` is a public-safe reference you can cite in downstream artifacts (PRs, audit trails, compliance docs) without leaking source text.
+You can recompute the hash over `(chunk_text, source_url, freshness_ts)` to verify the Worker didn't silently substitute content.
 
 ---
 

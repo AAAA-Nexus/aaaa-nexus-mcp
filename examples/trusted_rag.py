@@ -40,22 +40,9 @@ async def main() -> None:
         print("hallucination verdict:", guard.get("hallucination", {}).get("verdict"))
         print("drift detected:", guard.get("drift", {}).get("drift_detected"))
 
-        # 3. Optional — emit a trace certificate for audit trail.
-        cert = await c.post(
-            "/v1/uep/trace-certify",
-            {
-                "final_verdict": "PASS",
-                "gate_results": [
-                    {"gate": "rag_freshness", "verdict": "PASS"},
-                    {"gate": "hallucination", "verdict": guard.get("hallucination", {}).get("verdict", "UNKNOWN")},
-                    {"gate": "drift", "verdict": "PASS" if not guard.get("drift", {}).get("drift_detected") else "FAIL"},
-                ],
-                "evidence_hashes": [r.get("receipt_hash", "") for r in ctx.get("results", [])],
-                "public_safe": True,
-                "public_safe_summary": "EU AI Act Annex IV retrieval, 5 trusted chunks",
-            },
-        )
-        print("trace certificate:", cert.get("cert_id"))
+        # 3. Collect per-chunk lineage receipts for your audit trail.
+        receipts = [r.get("receipt_hash", "") for r in ctx.get("results", [])]
+        print(f"lineage receipts: {len(receipts)} (first = {receipts[0] if receipts else 'none'})")
 
 
 if __name__ == "__main__":
