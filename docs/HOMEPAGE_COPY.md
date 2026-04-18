@@ -6,12 +6,12 @@
 
 ## Hero
 
-**The trustless agent economy stack.**
-140 tools. 8 capabilities you cannot get anywhere else. One HTTP surface.
+**Developer infrastructure for trustworthy agents.**
+135 tools across 7 capability areas. One HTTP surface.
 
 `pip install aaaa-nexus-mcp` · `npm install @atomadic/nexus-client` · `curl atomadic.tech/health`
 
-[Get started → /docs](#) · [Get a key → /pay](#)
+[Get started → /docs](https://atomadic.tech/docs/mcp) · [Get a key → /pay](https://atomadic.tech/pay)
 
 ---
 
@@ -31,24 +31,24 @@ AAAA-Nexus does all of that at the HTTP layer. Bearer auth. JSON in, JSON out. E
 
 ---
 
-## Section 2 — Enhancement Architect System Prompts
+## Section 2 — Agent Workflow Patterns
 
-Four battle-tested system prompts that turn any LLM into a self-improving agent:
+Three operating patterns you can use to turn any LLM into a self-improving agent:
 
 - **DADA** — Delegator Atomadic Developer Agent. Routes, verifies, ships.
 - **Atomadic** — Intent interpreter that sharpens any user prompt into an actionable form.
 - **Autopoetic** — Self-healing feedback loop for drift-resistant agents.
 
-Drop any of them into `CLAUDE.md`, `.cursorrules`, or your system prompt. The agent starts calling `nexus_*` tools on the first turn.
+Use them as starting points in `CLAUDE.md`, `.cursorrules`, or your system prompt when you want the agent to use `nexus_*` tools on the first turn.
 
 ---
 
-## Section 3 — The trustless agent economy stack
+## Section 3 — Capability overview
 
 One base URL. Seven capabilities. Zero lock-in.
 
 | Capability | What it gives you |
-|---|---|
+| --- | --- |
 | Trust oracles | Hallucination + drift verdicts on any text |
 | **Shared LoRA loop** | Earn rewards contributing fixes; pull the community adapter |
 | **Trusted RAG** | Provenance-gated retrieval with SHA-256 receipts |
@@ -59,13 +59,16 @@ One base URL. Seven capabilities. Zero lock-in.
 
 ---
 
-## Section 4 — Seven capabilities you cannot get anywhere else
+## Section 4 — Seven capability areas
 
 ### 1. Trust oracles
+
 Hallucination verdict in one call. `/v1/oracle/hallucination` returns `POLICY_EPSILON` + `verdict`. No other API gives you this.
 
 ### 2. Shared LoRA with rewards
+
 Contribute a `(bad → good)` code fix. Get paid in:
+
 - Discounted / free API calls (reputation tier pricing)
 - Prize-draw entries on training milestones
 - Leaderboard placement
@@ -74,18 +77,23 @@ Contribute a `(bad → good)` code fix. Get paid in:
 The only federated LoRA loop that pays you to improve it.
 
 ### 3. Trusted RAG cycle
+
 Every chunk gated on source allowlist, freshness, hallucination verdict, drift score. Every result ships with a tamper-evident receipt. RAG you can actually audit.
 
 ### 4. Sys primitives
+
 `trust_gate`, `lint_gate`, `chain_parity`, `friction_score`, `novelty_jump` — numerical invariants your agent uses to govern itself between calls.
 
 ### 5. Compliance as a primitive
+
 EU AI Act Annex IV conformity, GDPR Art. 22 explainability, NIST AI-RMF. One call each. Certificates chained to the lineage vault.
 
 ### 6. Escrow + SLA
+
 Lock USDC, release on outcome proof, arbitrate disputes. Pay for what actually worked.
 
 ### 7. VeriRand
+
 Quantum-seeded RNG with HMAC proofs. VRF draws with on-chain verification. Your random numbers are actually random, and you can prove it.
 
 ---
@@ -101,9 +109,18 @@ pip install aaaa-nexus-mcp
 ```
 
 ```python
+import asyncio
+
 from aaaa_nexus_mcp.client import NexusAPIClient
-async with NexusAPIClient(api_key="an_...") as c:
-    verdict = await c.post("/v1/oracle/hallucination", {"text": "..."})
+
+
+async def main() -> None:
+  async with NexusAPIClient(api_key="an_...") as client:
+    verdict = await client.post("/v1/oracle/hallucination", {"text": "..."})
+    print(verdict)
+
+
+asyncio.run(main())
 ```
 
 ### TypeScript
@@ -137,6 +154,4 @@ const verdict = await nexus.oracle.hallucination({ text: "..." });
 ## Section 6 — Footer CTAs
 
 **Start free** · No key needed for `/health`, `/v1/rng/quantum`, `/v1/agent/card`, `/v1/metrics`.
-**Go paid** · [atomadic.tech/pay](#) · Pay per call in USDC · Top LoRA contributors get 25–50% off every call.
-
-
+**Go paid** · [atomadic.tech/pay](https://atomadic.tech/pay) · Pay per call in USDC · Top LoRA contributors get 25–50% off every call.

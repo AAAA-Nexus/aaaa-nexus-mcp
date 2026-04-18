@@ -21,8 +21,8 @@ Tools
 - ``nexus_friction_score``        -- entropy-based adaptive throttle.
 - ``nexus_variant_rotate``        -- 3-fold refactor variant generation.
 - ``nexus_chain_parity``          -- [24,12,8] parity checksum over tool-call chains.
-- ``nexus_novelty_jump``          -- shell-transition novelty detector.
-- ``nexus_fuel_budget_create``    -- issue semantic-fuel budget in shells.
+- ``nexus_novelty_jump``          -- tier-transition novelty detector.
+- ``nexus_fuel_budget_create``    -- issue semantic-fuel budget at a tier level.
 - ``nexus_fuel_budget_spend``     -- spend + attest fuel consumption.
 """
 
@@ -39,21 +39,22 @@ from pathlib import Path
 from typing import Any
 
 from aaaa_nexus_mcp.codex import (
+    BLOCK_DIM,
     DELEGATION_DEPTH_LIMIT,
     DRIFT_LIMIT,
     POLICY_EPSILON,
-    BLOCK_DIM,
-    TIER1_MIN_COUNT,
-    TIER_SIZES,
-    RESIDUAL_NORM_LIMIT,
     QK_BLOCK_DIM,
     RATCHET_PERIOD,
+    RESIDUAL_NORM_LIMIT,
+    TIER1_MIN_COUNT,
+    TIER_SIZES,
     TRUST_FLOOR,
 )
+from aaaa_nexus_mcp.errors import NexusError
 from aaaa_nexus_mcp.tools import _fmt, handle_errors
 
 # -- In-memory VQ store -------------------------------------------------
-# Each entry: {id: {"code": tuple[int, ...], "shell": int, "payload": str, "ts": int}}
+# Each entry: {id: {"code": tuple[int, ...], "tier": int, "payload": str, "ts": int}}
 _VQ_STORE: dict[str, dict[str, Any]] = {}
 
 # Session ratchet counter (RATCHET_PERIOD=47 forces rotation)
@@ -61,12 +62,10 @@ _SESSION_OPS: dict[str, int] = {"count": 0, "ratchet_id": 0}
 
 
 def _snap_to_codeword(values: list[float]) -> tuple[tuple[int, ...], int]:
+    """Quantize a vector to an even-parity 24-dim block code.
 
-
-    """Approximation: quantize each 24-dim block to integer coordinates with
-
-    Returns (code, shell_index) where shell_index indicates the squared norm
-    bucket from ``TIER_SIZES``.
+    Returns ``(code, tier_index)`` where ``tier_index`` identifies the
+    squared-norm bucket from ``TIER_SIZES``.
     """
     # Pad / truncate to multiple of 24
     n = len(values)
@@ -76,7 +75,7 @@ def _snap_to_codeword(values: list[float]) -> tuple[tuple[int, ...], int]:
     code: list[int] = []
     for i in range(0, len(padded), QK_BLOCK_DIM):
         block = padded[i : i + QK_BLOCK_DIM]
-        # Round to integer; enforce even sum (D_24 constraint)
+        # Round to integer; enforce even sum (parity constraint)
         rounded = [round(x * 8) for x in block]  # 8 = scale factor for resolution
         if sum(rounded) % 2 != 0:
             # Flip the coordinate with largest rounding residual
@@ -84,18 +83,18 @@ def _snap_to_codeword(values: list[float]) -> tuple[tuple[int, ...], int]:
             j = residuals.index(max(residuals))
             rounded[j] += 1 if block[j] * 8 > round(block[j] * 8) else -1
         code.extend(rounded)
-    # Shell index: squared norm bucket
+    # Tier index: squared-norm bucket
     norm_sq = sum(c * c for c in code)
-    shell = 0
+    tier = 0
     cumulative = 0
     for idx, count in enumerate(TIER_SIZES):
         cumulative += count
         if norm_sq < cumulative // 1000:  # heuristic bucket
-            shell = idx
+            tier = idx
             break
     else:
-        shell = len(TIER_SIZES) - 1
-    return (tuple(code), shell)
+        tier = len(TIER_SIZES) - 1
+    return (tuple(code), tier)
 
 
 def _hamming(a: tuple[int, ...], b: tuple[int, ...]) -> int:
@@ -161,7 +160,7 @@ async def _attest(
                 "outcome": payload_hash,
             },
         )
-    except Exception as e:  # noqa: BLE001
+    except NexusError as e:
         receipt = {"error": "attestation_unavailable", "detail": str(e)}
     return {
         **result,
@@ -229,14 +228,15 @@ def _shannon_entropy(text: str) -> float:
     return -sum((n / total) * math.log2(n / total) for n in freq.values() if n > 0)
 
 
-# -- Shell budget (semantic fuel accounting) ----------------------------------
-# Each shell costs 10× more than the last. Shell 0 = the configured density units of fuel.
-_SHELL_BUDGETS: dict[str, dict[str, Any]] = {}
+# -- Tier budget (semantic fuel accounting) ----------------------------------
+# Each tier costs 10x more than the previous. Tier 0 = 1 fuel unit per op.
+_TIER_BUDGETS: dict[str, dict[str, Any]] = {}
+_DEFAULT_INITIAL_FUEL: int = 1_000_000
 
 
-def _shell_cost(shell: int) -> int:
-    """Cost in fuel units to spend one operation at shell level N."""
-    return 10**shell
+def _tier_cost(tier: int) -> int:
+    """Cost in fuel units to spend one operation at tier level N."""
+    return 10**tier
 
 
 def register(mcp: Any, get_client: Callable) -> None:
@@ -285,10 +285,10 @@ def register(mcp: Any, get_client: Callable) -> None:
 
         Runs locally (no API cost).
         """
-        code, shell = _snap_to_codeword(values)
+        code, tier = _snap_to_codeword(values)
         _VQ_STORE[entry_id] = {
             "code": code,
-            "shell": shell,
+            "tier": tier,
             "payload": payload,
             "ts": int(time.time()),
         }
@@ -296,7 +296,7 @@ def register(mcp: Any, get_client: Callable) -> None:
             "stored": True,
             "entry_id": entry_id,
             "code_length": len(code),
-            "tier": shell,
+            "tier": tier,
             "total_entries": len(_VQ_STORE),
         })
 
@@ -313,8 +313,8 @@ def register(mcp: Any, get_client: Callable) -> None:
             {
                 "entry_id": eid,
                 "distance": _hamming(query_code, rec["code"]),
-                "tier": rec["shell"],
-                "tier_match": rec["shell"] == query_tier,
+                "tier": rec["tier"],
+                "tier_match": rec["tier"] == query_tier,
                 "payload": rec["payload"],
                 "age_seconds": int(time.time()) - rec["ts"],
             }
@@ -334,8 +334,8 @@ def register(mcp: Any, get_client: Callable) -> None:
         """Binary pass/fail trust gate for LLM-generated content.
 
         Runs hallucination_oracle + aibom_drift, returns PASS iff:
-          - hallucination POLICY_EPSILON < POLICY_EPSILON (1/)
-          - drift delta < DRIFT_LIMIT (324/)
+                    - hallucination score stays below the configured threshold
+                    - drift delta stays within the configured threshold
 
         Verdict 'PASS' => safe to commit. 'FAIL' => reject and regenerate.
         """
@@ -503,24 +503,35 @@ def register(mcp: Any, get_client: Callable) -> None:
 
         Returns attested receipt when ``attested=True``.
         """
+        from aaaa_nexus_mcp.codex import (
+            TRIALITY_CHARGED,
+            TRIALITY_NEUTRAL,
+            TRIALITY_TOTAL,
+        )
+
         tokens = code_or_text.split()
         n = len(tokens)
-        # Triality split ratios: 92/264, 86/264, 86/264
-        a = max(1, (n * 92) // 264)
-        b = max(1, (n * 86) // 264)
+        # 3-fold split ratios: NEUTRAL/TOTAL, CHARGED/TOTAL, CHARGED/TOTAL
+        a = max(1, (n * TRIALITY_NEUTRAL) // TRIALITY_TOTAL)
+        b = max(1, (n * TRIALITY_CHARGED) // TRIALITY_TOTAL)
         slice_a = tokens[:a]
         slice_b = tokens[a : a + b]
         slice_c = tokens[a + b :]
         variants = {
-            "neutral": " ".join(slice_a + slice_b + slice_c),
-            "charged_plus": " ".join(slice_b + slice_c + slice_a),
-            "charged_minus": " ".join(slice_c + slice_a + slice_b),
+            "primary": " ".join(slice_a + slice_b + slice_c),
+            "secondary": " ".join(slice_b + slice_c + slice_a),
+            "tertiary": " ".join(slice_c + slice_a + slice_b),
         }
-        curvature_phase_rad = math.asin(1 / 3)
+        rotation_phase_rad = math.asin(1 / 3)
         result = {
-            "curvature_phase_rad": curvature_phase_rad,
-            "curvature_phase_deg": math.degrees(curvature_phase_rad),
-            "triality_split": {"neutral": 92, "charged": 86, "total": 264},
+            "rotation_phase_rad": rotation_phase_rad,
+            "rotation_phase_deg": math.degrees(rotation_phase_rad),
+            "variant_split": {
+                "primary": TRIALITY_NEUTRAL,
+                "secondary": TRIALITY_CHARGED,
+                "tertiary": TRIALITY_CHARGED,
+                "total": TRIALITY_TOTAL,
+            },
             "variant_hashes": {
                 k: hashlib.sha256(v.encode()).hexdigest()[:16] for k, v in variants.items()
             },
@@ -614,26 +625,27 @@ def register(mcp: Any, get_client: Callable) -> None:
     async def nexus_fuel_budget_create(
         budget_id: str,
         initial_tier: int = 0,
+        initial_fuel: int = _DEFAULT_INITIAL_FUEL,
         attested: bool = True,
     ) -> str:
         """Create a semantic-fuel budget at a given tier level.
 
-        Each tier costs 10× more than the previous (tier 0 = 1 unit,
-        tier 1 = 10, tier 2 = 100, …). Spend via ``nexus_fuel_budget_spend``.
+        Each tier costs 10x more than the previous (tier 0 = 1 unit,
+        tier 1 = 10, tier 2 = 100, ...). Spend via ``nexus_fuel_budget_spend``.
         """
-        if budget_id in _SHELL_BUDGETS:
+        if budget_id in _TIER_BUDGETS:
             return _fmt({"error": "budget_exists", "budget_id": budget_id})
-        _SHELL_BUDGETS[budget_id] = {
-            "fuel_remaining": TIER1_MIN_COUNT,
-            "initial_shell": initial_tier,
+        _TIER_BUDGETS[budget_id] = {
+            "fuel_remaining": initial_fuel,
+            "initial_tier": initial_tier,
             "spend_log": [],
             "created_at": int(time.time()),
         }
         result = {
             "budget_id": budget_id,
-            "fuel_remaining": TIER1_MIN_COUNT,
+            "fuel_remaining": initial_fuel,
             "initial_tier": initial_tier,
-            "cost_table": {f"tier_{i}": _shell_cost(i) for i in range(5)},
+            "cost_table": {f"tier_{i}": _tier_cost(i) for i in range(5)},
         }
         attested_result = await _attest(get_client(), "fuel_budget_create", result, attested)
         return _fmt(attested_result)
@@ -651,10 +663,10 @@ def register(mcp: Any, get_client: Callable) -> None:
         Returns ``verdict: ALLOW`` if fuel suffices, else ``DENIED``.
         Logs every spend with description for audit trail.
         """
-        b = _SHELL_BUDGETS.get(budget_id)
+        b = _TIER_BUDGETS.get(budget_id)
         if b is None:
             return _fmt({"error": "budget_not_found", "budget_id": budget_id})
-        cost = _shell_cost(tier)
+        cost = _tier_cost(tier)
         if b["fuel_remaining"] < cost:
             result = {
                 "verdict": "DENIED",

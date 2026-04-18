@@ -34,7 +34,7 @@
   ],
   "interface": {
     "displayName": "AAAA-Nexus MCP",
-    "shortDescription": "134 API tools for trustworthy autonomous agents.",
+    "shortDescription": "135 API tools for trustworthy autonomous agents.",
     "longDescription": "AAAA-Nexus MCP exposes the Atomadic trust, safety, compliance, agent economy, LoRA, and verifiable randomness API surface through MCP. The Rust Worker backend remains the enforcement authority; MCP clients receive ergonomic tool wrappers and public-safe structured envelopes.",
     "developerName": "Atomadic",
     "category": "Developer Tools",

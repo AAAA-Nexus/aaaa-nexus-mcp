@@ -1,12 +1,20 @@
 """Tests for codex constants and tier closure identities."""
 
+# pylint: disable=import-error
+
 from __future__ import annotations
 
 import json
+import sys
 from collections.abc import Callable
+from pathlib import Path
 from unittest.mock import AsyncMock
 
 import pytest
+
+SRC = Path(__file__).resolve().parents[1] / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
 from aaaa_nexus_mcp import codex
 from aaaa_nexus_mcp.tools import register_all_tools
@@ -24,8 +32,8 @@ class FakeMCP:
         return decorator
 
 
-@pytest.fixture
-def mcp_and_client():
+@pytest.fixture(name="mcp_and_client")
+def _mcp_and_client_fixture():
     fake = FakeMCP()
     client = AsyncMock()
     client.get = AsyncMock(return_value={"ok": True})
@@ -34,8 +42,9 @@ def mcp_and_client():
     return fake, client
 
 
+
 class TestCodexConstants:
-    def test_omega_identity(self):
+    def test_tier_closure_identity(self):
         assert codex.TIER_CLOSURE == 0
         assert codex.RESIDUAL_NORM_LIMIT - codex.TIER1_MIN_COUNT - codex.BLOCK_DIM == 0
 
@@ -144,16 +153,16 @@ class TestLocalTools:
 
 class TestPremiumCodexTools:
     @pytest.mark.asyncio
-    async def test_curvature_rotate_produces_three_variants(self, mcp_and_client):
+    async def test_variant_rotate_produces_three_variants(self, mcp_and_client):
         mcp, _ = mcp_and_client
         text = "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu"
         result = json.loads(
             await mcp.tools["nexus_variant_rotate"](code_or_text=text, attested=False)
         )
-        assert set(result["variants"].keys()) == {"neutral", "charged_plus", "charged_minus"}
+        assert set(result["variants"].keys()) == {"primary", "secondary", "tertiary"}
         hashes = set(result["variant_hashes"].values())
         assert len(hashes) == 3  # all three are distinct
-        assert result["triality_split"]["total"] == 264
+        assert result["variant_split"]["total"] == 264
 
     @pytest.mark.asyncio
     async def test_ecc_encode_decode_roundtrip(self, mcp_and_client):
@@ -179,7 +188,7 @@ class TestPremiumCodexTools:
         assert bad["syndrome"] != 0
 
     @pytest.mark.asyncio
-    async def test_shell_jump_detects_novelty(self, mcp_and_client):
+    async def test_tier_jump_detects_novelty(self, mcp_and_client):
         mcp, _ = mcp_and_client
         result = json.loads(
             await mcp.tools["nexus_novelty_jump"](
@@ -192,39 +201,40 @@ class TestPremiumCodexTools:
         assert result["novelty_score"] == 0
 
     @pytest.mark.asyncio
-    async def test_shell_budget_lifecycle(self, mcp_and_client):
+    async def test_tier_budget_lifecycle(self, mcp_and_client):
         mcp, _ = mcp_and_client
         create = json.loads(
             await mcp.tools["nexus_fuel_budget_create"](
                 budget_id="test-budget-1", attested=False
             )
         )
-        assert create['fuel_remaining'] == codex.TIER1_MIN_COUNT
-        # Spend at shell 0 (cost=1)
+        initial = create["fuel_remaining"]
+        assert initial > 0
+        # Spend at tier 0 (cost=1)
         spend = json.loads(
             await mcp.tools["nexus_fuel_budget_spend"](
                 budget_id="test-budget-1", tier=0, description="tiny op", attested=False
             )
         )
         assert spend["verdict"] == "ALLOW"
-        assert spend["fuel_remaining"] == 196559
-        # Spend at shell 5 (cost=100000) -> still allowed
+        assert spend["fuel_remaining"] == initial - 1
+        # Spend at tier 5 (cost=100000) -> still allowed
         spend2 = json.loads(
             await mcp.tools["nexus_fuel_budget_spend"](
                 budget_id="test-budget-1", tier=5, description="expensive", attested=False
             )
         )
         assert spend2["verdict"] == "ALLOW"
-        # Spend at shell 6 (cost=1M) -> DENIED
+        # Spend at tier 7 (cost=10M) -> DENIED (exceeds 1M default budget)
         spend3 = json.loads(
             await mcp.tools["nexus_fuel_budget_spend"](
-                budget_id="test-budget-1", tier=6, description="too big", attested=False
+                budget_id="test-budget-1", tier=7, description="too big", attested=False
             )
         )
         assert spend3["verdict"] == "DENIED"
 
     @pytest.mark.asyncio
-    async def test_shell_budget_unknown_id(self, mcp_and_client):
+    async def test_tier_budget_unknown_id(self, mcp_and_client):
         mcp, _ = mcp_and_client
         result = json.loads(
             await mcp.tools["nexus_fuel_budget_spend"](

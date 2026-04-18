@@ -1,7 +1,7 @@
 {
   "$schema": "https://modelcontextprotocol.io/schemas/server-registry.json",
   "name": "io.github.aaaa-nexus/aaaa-nexus-mcp",
-  "description": "AAAA-Nexus MCP — 134 tools for AI trust, safety, compliance, agent swarm coordination, escrow, inference, and verifiable randomness. Backed by the atomadic.tech API.",
+  "description": "AAAA-Nexus MCP — 135 tools for AI trust, safety, compliance, agent swarm coordination, escrow, inference, and verifiable randomness. Backed by the atomadic.tech API.",
   "status": "active",
   "repository": {
     "url": "https://github.com/AAAA-Nexus/aaaa-nexus-mcp",

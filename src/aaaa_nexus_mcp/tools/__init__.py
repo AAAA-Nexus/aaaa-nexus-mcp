@@ -48,6 +48,7 @@ def register_all_tools(mcp: Any, get_client: Callable) -> None:
     from aaaa_nexus_mcp.tools.escrow import register as r_escrow
     from aaaa_nexus_mcp.tools.inference import register as r_inference
     from aaaa_nexus_mcp.tools.lora import register as r_lora
+    from aaaa_nexus_mcp.tools.orchestration import register as r_orchestration
     from aaaa_nexus_mcp.tools.ratchetgate import register as r_ratchet
     from aaaa_nexus_mcp.tools.reputation import register as r_reputation
     from aaaa_nexus_mcp.tools.security import register as r_security
@@ -77,5 +78,6 @@ def register_all_tools(mcp: Any, get_client: Callable) -> None:
         r_verirand,
         r_codex,
         r_lora,
+        r_orchestration,
     ):
         reg(mcp, get_client)

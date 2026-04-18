@@ -1,6 +1,6 @@
 # Tool Catalogue
 
-140 tools across 19 categories. All are prefixed `nexus_` in MCP clients and map 1:1 to HTTP endpoints on `https://atomadic.tech`.
+This page summarizes the 135-tool surface across 19 categories. Core local categories are listed inline; the remaining categories link to their registration sites and live pricing references.
 
 **Free-tier endpoints** (no key required): `nexus_health`, `nexus_rng_quantum`, `nexus_agent_card`, `nexus_metrics`.
 
@@ -9,7 +9,7 @@
 ## System (4)
 
 | Tool | Endpoint | Price | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `nexus_health` | `GET /health` | free | API liveness |
 | `nexus_metrics` | `GET /v1/metrics` | free | Platform telemetry |
 | `nexus_pricing` | `GET /v1/pricing` | free | Machine-readable price manifest |
@@ -20,7 +20,7 @@
 Numerical invariants for agent self-governance. See [INTEGRATION.md](INTEGRATION.md).
 
 | Tool | Endpoint | Price |
-|---|---|---|
+| --- | --- | --- |
 | `nexus_sys_constants` | *(local)* | free |
 | `nexus_vq_memory_store` | `POST /v1/sys/vq/store` | $0.020 |
 | `nexus_vq_memory_query` | `POST /v1/sys/vq/query` | $0.010 |
@@ -41,7 +41,7 @@ Numerical invariants for agent self-governance. See [INTEGRATION.md](INTEGRATION
 The rewards flywheel. See [LORA_REWARDS.md](LORA_REWARDS.md).
 
 | Tool | Endpoint | Price |
-|---|---|---|
+| --- | --- | --- |
 | `nexus_lora_capture_fix` | *(local)* | free |
 | `nexus_lora_buffer_inspect` | *(local)* | free |
 | `nexus_lora_buffer_clear` | *(local)* | free |
@@ -50,7 +50,7 @@ The rewards flywheel. See [LORA_REWARDS.md](LORA_REWARDS.md).
 | `nexus_lora_adapter_current` | `GET /v1/lora/adapter/{lang}` | $0.010 |
 | `nexus_lora_reward_claim` | `POST /v1/lora/reward/claim` | $0.020 |
 
-## Trust Oracles (6), Security (8), Compliance (14), RatchetGate (4), AEGIS/VANGUARD (7), Agent Swarm (11), Discovery (3), Reputation (4), SLA (4), Escrow (5), Inference (8), Control Plane (10), Ecosystem (21), VeriRand (4)
+## Trust Oracles (6), Security (8), Compliance (14), RatchetGate (4), AEGIS (3), VANGUARD (4), Agent Swarm (11), Discovery (3), Reputation (4), SLA (4), Escrow (5), Inference (8), Control Plane (10), Ecosystem (21), Orchestration (1), VeriRand (4)
 
 See the in-code registration sites for the full list:
 
@@ -68,6 +68,7 @@ See the in-code registration sites for the full list:
 - [src/aaaa_nexus_mcp/tools/inference.py](../src/aaaa_nexus_mcp/tools/inference.py)
 - [src/aaaa_nexus_mcp/tools/control_plane.py](../src/aaaa_nexus_mcp/tools/control_plane.py)
 - [src/aaaa_nexus_mcp/tools/ecosystem.py](../src/aaaa_nexus_mcp/tools/ecosystem.py)
+- [src/aaaa_nexus_mcp/tools/orchestration.py](../src/aaaa_nexus_mcp/tools/orchestration.py)
 - [src/aaaa_nexus_mcp/tools/verirand.py](../src/aaaa_nexus_mcp/tools/verirand.py)
 
 Or query live pricing:

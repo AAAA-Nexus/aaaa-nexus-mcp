@@ -5,7 +5,7 @@ Every AAAA-Nexus endpoint is reachable from any language that speaks HTTP + JSON
 ## Decision matrix
 
 | You are... | Use |
-|---|---|
+| --- | --- |
 | Building an agent in Claude Code / Cursor / Windsurf | **MCP plugin** (no code — just a config file) |
 | Writing a Python backend | **`aaaa-nexus-mcp` Python client** |
 | Writing a TS / Node / Deno / Bun service | **`@atomadic/nexus-client` npm package** |
@@ -20,7 +20,7 @@ Every AAAA-Nexus endpoint is reachable from any language that speaks HTTP + JSON
 pip install aaaa-nexus-mcp
 ```
 
-Then drop one of the configs from [examples/mcp_configs/](../examples/mcp_configs/) into your editor's settings file. Restart. All 140 tools appear as `nexus_*` in the chat.
+Then drop one of the configs from [examples/mcp_configs/](../examples/mcp_configs/) into your editor's settings file. Restart. All 135 tools appear as `nexus_*` in the chat.
 
 See [MCP_CLIENTS.md](MCP_CLIENTS.md) for per-editor file paths.
 
@@ -90,7 +90,7 @@ curl -sS https://atomadic.tech/v1/oracle/hallucination \
 All errors return `{ "error": "<code>", "detail": "<human>" }` with the appropriate HTTP status.
 
 | Status | Meaning |
-|---|---|
+| --- | --- |
 | 401 | Missing or invalid API key |
 | 402 | Payment required (insufficient balance) |
 | 429 | Rate limited — back off and retry |

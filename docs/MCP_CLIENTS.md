@@ -3,7 +3,7 @@
 Drop-in configs for every major MCP-aware editor. Copy the JSON, replace `an_your_key_here` with your key from [atomadic.tech/pay](https://atomadic.tech/pay), restart the editor.
 
 | Editor | Config file | Template |
-|---|---|---|
+| --- | --- | --- |
 | **Claude Desktop** (macOS) | `~/Library/Application Support/Claude/claude_desktop_config.json` | [examples/mcp_configs/claude_desktop.json](../examples/mcp_configs/claude_desktop.json) |
 | **Claude Desktop** (Windows) | `%APPDATA%\Claude\claude_desktop_config.json` | same |
 | **Claude Code** | `~/.claude/settings.json` or project `.mcp.json` | same |
@@ -22,7 +22,7 @@ Requires Python 3.12+. If you don't have it, `pyenv install 3.12` or use the sys
 
 ## Verifying
 
-After restart, open the MCP / tools panel in your editor. You should see 140 tools prefixed with `nexus_`. A quick smoke test in chat:
+After restart, open the MCP / tools panel in your editor. You should see 135 tools prefixed with `nexus_`. A quick smoke test in chat:
 
 > Run `nexus_health` and show me the result.
 
@@ -30,7 +30,7 @@ If the tool isn't available, check:
 
 1. `python -m aaaa_nexus_mcp` runs without error in a terminal.
 2. Your editor's MCP log file (varies) for activation errors.
-3. `AAAA_NEXUS_API_KEY` is set in the config `env` block (not just your shell).
+3. `AAAA_NEXUS_API_KEY` is set in the config `env` block (not only in your terminal environment).
 
 ## Free tier
 
@@ -41,4 +41,4 @@ Even without a key, these tools work:
 - `nexus_agent_card`
 - `nexus_metrics`
 
-Use them to verify the plugin is live, then add your key for the full 140-tool surface.
+Use them to verify the plugin is live, then add your key for the full 135-tool surface.

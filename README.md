@@ -1,10 +1,10 @@
 # AAAA-Nexus
 
-**The trustless agent economy stack.** 146 endpoints. Eight capabilities you cannot get anywhere else. One HTTP surface — callable from MCP, Python, TypeScript, curl, or any language that speaks JSON.
+**Developer infrastructure for trustworthy agents.** 135 MCP tools across 19 categories for trust, security, compliance, RAG, payments, and agent orchestration.
 
-```
+```bash
 pip install aaaa-nexus-mcp           # Python + Claude / Cursor / Codex MCP
-npm  install aaaa-nexus-sdk  # TypeScript / Node / Deno / Bun
+npm install @atomadic/nexus-client   # TypeScript / Node / Deno / Bun
 curl https://atomadic.tech/health    # or skip the SDK entirely
 ```
 
@@ -25,7 +25,7 @@ Your agent is already writing code, making decisions, and spending tokens. What 
 7. Escrow a payment on outcome-based delivery.
 8. Certify its trace for EU AI Act Annex IV, GDPR Art. 22, and NIST AI-RMF.
 
-AAAA-Nexus does all eight. At the HTTP layer. In one call.
+AAAA-Nexus does all of that. At the HTTP layer. In one call.
 
 ---
 
@@ -88,10 +88,10 @@ See [examples/trusted_rag.py](examples/trusted_rag.py) for the full cycle includ
 
 ---
 
-## The eight capabilities
+## Key capabilities
 
 | # | Capability | Representative endpoints | What it solves |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | **Trust oracles** | `/v1/oracle/hallucination`, `/v1/trust/decay` | Hallucination + drift verdicts on any text |
 | 2 | **Shared LoRA loop** | `/v1/lora/contribute`, `/v1/lora/reward/claim` | Earn rewards contributing fixes; pull the community adapter |
 | 3 | **Trusted RAG** | `/v1/rag/augment`, `/v1/aibom/drift` | Provenance-gated retrieval with receipts |
@@ -103,18 +103,19 @@ See [examples/trusted_rag.py](examples/trusted_rag.py) for the full cycle includ
 Tools per category:
 
 | Category | Tools | Category | Tools |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | System | 4 | Security | 8 |
 | Sys Primitives | 14 | Compliance | 14 |
 | LoRA Training | 7 | RatchetGate | 4 |
-| Trusted RAG | 2 | AEGIS / VANGUARD | 7 |
-| Trust Oracles | 6 | Agent Swarm | 11 |
+| Trust Oracles | 6 | AEGIS | 3 |
+| VANGUARD | 4 | Agent Swarm | 11 |
 | Discovery | 3 | Reputation | 4 |
 | SLA | 4 | Escrow | 5 |
 | Inference | 8 | Control Plane | 10 |
-| Ecosystem | 21 | VeriRand | 4 |
+| Ecosystem | 21 | Orchestration | 1 |
+| VeriRand | 4 | - | - |
 
-**Total: 134 tools across 18 categories.** Full list: [docs/TOOLS.md](docs/TOOLS.md).
+**Total: 135 tools across 19 categories.** Full list: [docs/TOOLS.md](docs/TOOLS.md).
 
 ---
 
@@ -122,7 +123,7 @@ Tools per category:
 
 One base URL. Bearer auth. JSON in / JSON out. Every response is already guarded.
 
-```
+```text
 POST https://atomadic.tech/v1/<category>/<verb>
 Authorization: Bearer an_your_key
 Content-Type: application/json
@@ -132,15 +133,15 @@ The MCP plugin, the Python SDK, the npm package, and your own curl calls all hit
 
 ---
 
-## Enhancement Architect System Prompts
+## Enhancement Architect Prompt Patterns
 
-AAAA-Nexus ships curated system prompts that turn any LLM into a **self-improving agent** wired to the trust + LoRA + RAG stack:
+AAAA-Nexus documents three operating patterns you can use to turn any LLM into a **self-improving agent** wired to the trust + LoRA + RAG stack:
 
-- `dada.system.md` — Delegator Atomadic Developer Agent (routes tasks, verifies in a separate lane)
-- `atomadic.system.md` — Intent interpreter & prompt refiner
-- `autopoetic.system.md` — Self-healing feedback loop
+- `DADA` — Delegator Atomadic Developer Agent (routes tasks, verifies in a separate lane)
+- `Atomadic` — Intent interpreter & prompt refiner
+- `Autopoetic` — Self-healing feedback loop
 
-See [prompts/](prompts/) for the full catalogue. Drop any of them into your `CLAUDE.md`, `.cursorrules`, or system prompt field and the agent starts calling `nexus_*` tools automatically.
+Use them as starting points in your `CLAUDE.md`, `.cursorrules`, or system prompt field when you want the agent to use `nexus_*` tools intentionally.
 
 ---
 
@@ -168,7 +169,7 @@ Add to `~/.claude/settings.json` or project `.mcp.json`:
 }
 ```
 
-Restart the editor. All 146 endpoints are now available as `nexus_*` in your chat. See [examples/mcp_configs/](examples/mcp_configs/) for Cursor, Claude Desktop, VS Code, Zed, and Windsurf.
+Restart the editor. All 135 tools are now available as `nexus_*` in your chat. See [examples/mcp_configs/](examples/mcp_configs/) for Cursor, Claude Desktop, VS Code, Zed, and Windsurf.
 
 ### 2. Python
 
@@ -194,18 +195,18 @@ Full script: [examples/python_quickstart.py](examples/python_quickstart.py).
 ### 3. TypeScript / Node / Deno / Bun
 
 ```bash
-npm install aaaa-nexus-sdk
+npm install @atomadic/nexus-client
 ```
 
 ```ts
-import { NexusClient } from "aaaa-nexus-sdk";
+import { NexusClient } from "@atomadic/nexus-client";
 
 const nexus = new NexusClient({ apiKey: process.env.AAAA_NEXUS_API_KEY });
 const verdict = await nexus.oracle.hallucination({ text: "The moon is made of Swiss cheese." });
 console.log(verdict);
 ```
 
-Full script: [examples/typescript_quickstart.ts](examples/typescript_quickstart.ts). Package source: [clients/typescript/](clients/typescript/).
+Full script: [examples/typescript_quickstart.ts](examples/typescript_quickstart.ts). See [docs/INTEGRATION.md](docs/INTEGRATION.md) for the broader client surface.
 
 ### 4. curl (any language)
 
@@ -223,7 +224,7 @@ Full script: [examples/curl_quickstart.sh](examples/curl_quickstart.sh).
 ## Configuration
 
 | Variable | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `AAAA_NEXUS_API_KEY` | *(none)* | Bearer token for paid tools |
 | `AAAA_NEXUS_BASE_URL` | `https://atomadic.tech` | API base URL |
 | `AAAA_NEXUS_TIMEOUT` | `20.0` | Request timeout (seconds) |
@@ -236,7 +237,7 @@ Free tier endpoints that work without a key: `/health`, `/v1/rng/quantum`, `/v1/
 ## Documentation
 
 - [docs/INTEGRATION.md](docs/INTEGRATION.md) — language-by-language integration guide
-- [docs/TOOLS.md](docs/TOOLS.md) — full 140-tool catalogue with pricing
+- [docs/TOOLS.md](docs/TOOLS.md) — tool index and pricing references for the 135-tool surface
 - [docs/LORA_REWARDS.md](docs/LORA_REWARDS.md) — rewards program, leaderboard, prize mechanics
 - [docs/TRUSTED_RAG.md](docs/TRUSTED_RAG.md) — RAG cycle, provenance, receipt format
 - [docs/MCP_CLIENTS.md](docs/MCP_CLIENTS.md) — editor-by-editor setup (Claude, Cursor, VS Code, Zed, Windsurf)
@@ -252,126 +253,5 @@ Free tier endpoints that work without a key: `/health`, `/v1/rng/quantum`, `/v1/
 - [examples/mcp_configs/](examples/mcp_configs/) — drop-in configs for every MCP editor
 
 ## License
-Source: Business Source License 1.1 (see LICENSE in main repo). Generated OpenAPI schema: CC BY-ND 4.0.
-# AAAA-Nexus MCP Plugin for Claude Code
 
-Claude Code MCP plugin providing access to the [AAAA-Nexus](https://atomadic.tech) trust, security, compliance, and agent infrastructure API.
-
-## Features
-
-**134 tools** across 18 categories:
-
-| Category | Tools | Highlights |
-|---|---|---|
-| System | 4 | Health, metrics, pricing, agent card |
-| Sys Primitives | 14 | Trust/lint gates, VQ memory, novelty & parity checks, budgets |
-| LoRA Training | 7 | Federated fix-capture, contribute, adapter pull, rewards |
-| Trusted RAG | 2 | Provenance-gated retrieval, AIBOM drift |
-| Trust Oracles | 6 | Hallucination detection, trust scoring, entropy |
-| Security | 8 | Prompt injection scan, threat scoring, PQC signatures |
-| Compliance | 14 | EU AI Act, NIST, fairness, audit, drift detection |
-| RatchetGate | 4 | Session security with 47-epoch cycle |
-| AEGIS | 3 | MCP firewall, epistemic routing, epoch certification |
-| VANGUARD | 4 | Red-teaming, MEV governance, escrow lock |
-| Agent Swarm | 11 | Registration, topology, planning, contradiction check |
-| Discovery | 3 | Capability search, recommendations, registry |
-| Reputation | 4 | Score, history, record, dispute |
-| SLA | 4 | Register, report, status, breach |
-| Escrow | 5 | Create, release, dispute, arbitrate |
-| Inference | 8 | AI inference, embeddings, text analysis, routing |
-| Control Plane | 10 | Authorization, spending, lineage, federation |
-| Ecosystem | 21 | Consensus, quota, sagas, memory fence, governance |
-| VeriRand | 4 | Quantum RNG, VRF draws with on-chain proof |
-
-## Setup
-
-### Prerequisites
-
-- Python 3.12+
-- [uv](https://docs.astral.sh/uv/) (recommended) or pip
-
-### Install dependencies
-
-```bash
-pip install aaaa-nexus-mcp
-```
-
-Or from source:
-
-```bash
-git clone https://github.com/AAAA-Nexus/aaaa-nexus-mcp
-cd aaaa-nexus-mcp
-pip install -e .
-```
-
-### Configure API key
-
-Free-tier endpoints (`nexus_health`, `nexus_rng_quantum`, `nexus_agent_card`, `nexus_metrics`) work without a key. For paid tools, get a key at https://atomadic.tech/pay.
-
-Set the environment variable:
-
-```bash
-export AAAA_NEXUS_API_KEY="an_your_key_here"
-```
-
-Or pass it via your client's MCP config (see below). **Never commit keys to source control.**
-
-### Add to Claude Code
-
-Add to your Claude Code settings (`~/.claude/settings.json` or project `.mcp.json`):
-
-```json
-{
-  "mcpServers": {
-    "aaaa-nexus": {
-      "command": "python",
-      "args": ["-m", "aaaa_nexus_mcp"],
-      "env": {
-        "AAAA_NEXUS_API_KEY": "an_your_key_here"
-      }
-    }
-  }
-}
-```
-
-### Test
-
-```bash
-# Verify server starts (Ctrl+C to exit)
-python -m aaaa_nexus_mcp
-
-# Quick Python test
-python -c "
-import asyncio
-from aaaa_nexus_mcp.client import NexusAPIClient
-async def t():
-    async with NexusAPIClient() as c:
-        print(await c.get('/health'))
-asyncio.run(t())
-"
-```
-
-## Tool naming
-
-All tools are prefixed with `nexus_` to avoid collisions in Claude Code's flat tool namespace. Examples:
-
-- `nexus_health` — API health check
-- `nexus_hallucination_oracle` — check text for confabulation
-- `nexus_prompt_inject_scan` — scan for adversarial injection
-- `nexus_ratchet_register` — start a secure session
-- `nexus_agent_plan` — decompose a goal into steps
-
-Use primitive tools such as `nexus_trust_gate`, `nexus_friction_score`, and `nexus_lora_contribute` when you need one exact backend capability. Compose them with your own agent logic to build phase-gated pipelines.
-
-## Configuration
-
-| Environment Variable | Default | Description |
-|---|---|---|
-| `AAAA_NEXUS_API_KEY` | *(none)* | API key for paid endpoints |
-| `AAAA_NEXUS_BASE_URL` | `https://atomadic.tech` | API base URL |
-| `AAAA_NEXUS_TIMEOUT` | `20.0` | Request timeout in seconds |
-
-## License
-Source: Business Source License 1.1 (see LICENSE in main repo). Generated OpenAPI schema: CC BY-ND 4.0.
-
-
+Source package: MIT. Generated OpenAPI schema: CC BY-ND 4.0.
