@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from collections.abc import Callable
 from pathlib import Path
 
@@ -19,6 +20,12 @@ COUNT_BEARING_RELEASE_FILES = (
     Path("plugin.json"),
     Path("server.json"),
     Path("REGISTRY_SUBMISSION.md"),
+)
+DISALLOWED_TRACKED_PUBLIC_HELPER_FILES = (
+    Path("docs/HOMEPAGE_COPY.md"),
+    Path("count_tools.py"),
+    Path(".pylintrc"),
+    Path("pyrightconfig.json"),
 )
 TOOL_COUNT_PATTERN = re.compile(r"\b(\d+)\b(?=[^\n]{0,32}\btools?\b)")
 
@@ -45,6 +52,25 @@ def _extract_tool_counts(text: str) -> list[int]:
     return [int(match.group(1)) for match in TOOL_COUNT_PATTERN.finditer(text)]
 
 
+def _status_entries(paths: tuple[Path, ...]) -> dict[str, str]:
+    git_status = subprocess.run(
+        ["git", "status", "--short", "--untracked-files=all", "--", *[path.as_posix() for path in paths]],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    status_entries: dict[str, str] = {}
+
+    for line in git_status.stdout.splitlines():
+        if not line:
+            continue
+
+        status_entries[line[3:].strip()] = line[:2]
+
+    return status_entries
+
+
 def test_required_public_release_files_exist() -> None:
     license_path = ROOT / "LICENSE"
     agents_path = ROOT / "AGENTS.md"
@@ -64,6 +90,20 @@ def test_agents_md_avoids_absolute_local_repo_paths() -> None:
     agents_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 
     assert ":\\!aaaa-" not in agents_text
+
+
+def test_disallowed_public_helper_files_are_not_tracked() -> None:
+    status_entries = _status_entries(DISALLOWED_TRACKED_PUBLIC_HELPER_FILES)
+    unexpected_paths = []
+
+    for relative_path in DISALLOWED_TRACKED_PUBLIC_HELPER_FILES:
+        status = status_entries.get(relative_path.as_posix())
+        if status == "??" or (status and "D" in status):
+            continue
+        if (ROOT / relative_path).exists():
+            unexpected_paths.append(relative_path.as_posix())
+
+    assert not unexpected_paths, f"unexpected tracked helper files: {sorted(unexpected_paths)}"
 
 
 def test_registered_tool_count_matches_public_release_count() -> None:

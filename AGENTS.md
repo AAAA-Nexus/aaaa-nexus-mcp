@@ -10,7 +10,7 @@
 
 - The registered MCP tool count is the only source of truth for public release counts.
 - Keep these shipped MCP-surface files in exact count parity with the registered tool count: `README.md`, `docs/INTEGRATION.md`, `docs/MCP_CLIENTS.md`, `docs/TOOLS.md`, `examples/mcp_configs/README.md`, `plugin.json`, `server.json`, and `REGISTRY_SUBMISSION.md`.
-- Do not turn `docs/HOMEPAGE_COPY.md` or other storefront draft copy into a hard release gate.
+- Draft storefront copy and local editor/dev helpers should not ship in the public repo when equivalent public docs or tests already exist.
 
 ## Storefront Boundary
 
