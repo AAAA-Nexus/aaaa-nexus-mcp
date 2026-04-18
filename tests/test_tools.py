@@ -1,6 +1,6 @@
 """Tests for MCP tool modules -- registration, dispatch, and error handling.
 
-Tests a representative sample of all 16 tool categories by mocking
+Tests a representative sample of the registered tool categories by mocking
 the NexusAPIClient and verifying that registered tool functions:
   1. Call the correct HTTP method + endpoint
   2. Format the response as JSON
@@ -17,6 +17,8 @@ import pytest
 
 from aaaa_nexus_mcp.errors import NexusAuthError, NexusServerError
 from aaaa_nexus_mcp.tools import register_all_tools
+
+EXPECTED_REGISTERED_TOOL_COUNT = 135
 
 # -- Fixtures -----------------------------------------------------------------
 
@@ -43,8 +45,8 @@ def _mock_client(get_response: dict | None = None, post_response: dict | None = 
     return client
 
 
-@pytest.fixture
-def mcp_and_client():
+@pytest.fixture(name="mcp_and_client")
+def _mcp_and_client_fixture():
     """Register all tools on a fake MCP with a mock client."""
     fake_mcp = FakeMCP()
     client = _mock_client()
@@ -62,8 +64,7 @@ def mcp_and_client():
 class TestToolRegistration:
     def test_all_tools_registered(self, mcp_and_client):
         fake_mcp, _ = mcp_and_client
-        # All 113 tools should be registered
-        assert len(fake_mcp.tools) >= 100, f"Expected 100+ tools, got {len(fake_mcp.tools)}"
+        assert len(fake_mcp.tools) == EXPECTED_REGISTERED_TOOL_COUNT
 
     def test_all_tools_prefixed_with_nexus(self, mcp_and_client):
         fake_mcp, _ = mcp_and_client

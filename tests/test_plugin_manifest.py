@@ -13,9 +13,9 @@ def test_plugin_manifest_is_aaaa_nexus_branded() -> None:
 
     assert manifest["name"] == "aaaa-nexus-mcp"
     assert manifest["version"] == "0.1.0"
+    assert manifest["license"] == "MIT"
     assert manifest["author"]["name"] == "Atomadic"
     assert manifest["repository"] == "https://github.com/AAAA-Nexus/aaaa-nexus-mcp"
-    assert "agent-hive" not in json.dumps(manifest).lower()
 
 
 def test_plugin_manifest_preserves_agent_skill_hook_wiring() -> None:

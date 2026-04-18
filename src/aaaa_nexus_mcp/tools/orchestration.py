@@ -1,12 +1,11 @@
-"""UEP orchestration tools.
+"""Public orchestration helpers for shipped repo assets.
 
-The MAP = TERRAIN gate enforces the axiom:
-if the technology needed for the task does not exist, halt and invent it.
+The MAP = TERRAIN gate compares requested capabilities against assets that
+actually ship in this repository. Unsupported capability types are rejected.
 """
 
 from __future__ import annotations
 
-import json
 import re
 from collections.abc import Callable
 from pathlib import Path
@@ -14,56 +13,14 @@ from typing import Any
 
 from aaaa_nexus_mcp.tools import _fmt, handle_errors
 
-_CAPABILITY_TYPES = ("agents", "hooks", "skills", "tools", "harnesses")
+_CAPABILITY_TYPES = ("tools",)
 
-_BASE_INVENTORY: dict[str, set[str]] = {
-    "agents": {
-        "dada_prime",
-        "build_captain",
-        "review_tribunal",
-        "safety_sentinel",
-        "quota_quartermaster",
-        "ledger_scribe",
-        "memory_fence_keeper",
-    },
-    "hooks": {
-        "nexus_trust_gate",
-        "nexus_lint_gate",
-        "nexus_chain_parity",
-        "nexus_hallucination_oracle",
-        "nexus_aegis_mcp_proxy",
-        "nexus_map_terrain",
-    },
-    "skills": {
-        "mcp_discovery",
-        "trusted_rag_design",
-        "lora_capture",
-        "prompt_boundary_review",
-        "capability_gap_analysis",
-    },
-    "tools": set(),
-    "harnesses": {
-        "cloudflare_worker_mcp",
-        "fastmcp_stdio",
-        "redacted_admin_probe",
-        "pytest",
-    },
-}
-
-_CREATION_TOOL_BY_TYPE = {
-    "agents": "nexus_spawn_agent",
-    "hooks": "nexus_synthesize_verified_code",
-    "skills": "nexus_synthesize_verified_code",
-    "tools": "nexus_synthesize_verified_code",
-    "harnesses": "nexus_secure_handoff",
+_REPO_PATH_BY_TYPE = {
+    "tools": "src/aaaa_nexus_mcp/tools",
 }
 
 _FUEL_BY_TYPE = {
-    "agents": 0.08,
-    "hooks": 0.04,
-    "skills": 0.03,
     "tools": 0.05,
-    "harnesses": 0.10,
 }
 
 
@@ -74,18 +31,16 @@ def _slug(value: str) -> str:
 def _capability_type(raw_type: str) -> str | None:
     normalized = raw_type.strip().lower().replace("-", "_")
     aliases = {
-        "agent": "agents",
-        "agents": "agents",
-        "hook": "hooks",
-        "hooks": "hooks",
-        "skill": "skills",
-        "skills": "skills",
         "tool": "tools",
         "tools": "tools",
-        "harness": "harnesses",
-        "harnesses": "harnesses",
     }
     return aliases.get(normalized)
+
+
+def _discover_inventory() -> dict[str, set[str]]:
+    return {
+        "tools": discover_mcp_tool_names(),
+    }
 
 
 def discover_mcp_tool_names() -> set[str]:
@@ -114,15 +69,16 @@ def map_terrain_payload(
 ) -> dict[str, Any]:
     """Return a MAP = TERRAIN verdict and invention plan."""
     constraints = invention_constraints or {}
-    inventory = {key: set(value) for key, value in _BASE_INVENTORY.items()}
-    inventory["tools"].update(discover_mcp_tool_names())
+    inventory = _discover_inventory()
 
     inventory_check: dict[str, dict[str, str]] = {key: {} for key in _CAPABILITY_TYPES}
     missing: list[dict[str, Any]] = []
+    invalid_types: list[str] = []
 
     for raw_type, names in required_capabilities.items():
         cap_type = _capability_type(raw_type)
         if cap_type is None:
+            invalid_types.append(str(raw_type))
             continue
         for name in names or []:
             normalized = _slug(str(name))
@@ -135,15 +91,21 @@ def map_terrain_payload(
             cc = constraints.get("max_cyclomatic_complexity", 7)
             sandbox = constraints.get("sandbox_test_required", True)
             cap_label = cap_type[:-1].title()
+            recommended_path = _REPO_PATH_BY_TYPE[cap_type]
             missing.append({
                 "name": str(name),
                 "type": cap_label,
+                "inventory_source": recommended_path,
                 "specification": (
                     f"{cap_label} '{name}' is required before executing: "
                     f"{task_description}. Provide a stable JSON-compatible interface, "
                     f"cyclomatic complexity <= {cc}, sandbox_test_required={sandbox}."
                 ),
-                "recommended_creation_tool": _CREATION_TOOL_BY_TYPE[cap_type],
+                "recommended_path": recommended_path,
+                "recommended_follow_up": (
+                    f"Add the missing {cap_type[:-1]} under {recommended_path} and rerun "
+                    "nexus_map_terrain."
+                ),
                 "estimated_fuel_cost": _FUEL_BY_TYPE[cap_type],
                 "verification_criteria": [
                     "Specification is explicit and testable.",
@@ -151,8 +113,17 @@ def map_terrain_payload(
                     f"Cyclomatic complexity <= {cc}.",
                     "Passes sandbox execution test.",
                 ],
-                "human_approval_required": cap_type in {"agents", "harnesses"},
+                "human_approval_required": False,
             })
+
+    if invalid_types:
+        return {
+            "verdict": "INVALID_INPUT",
+            "error": "unsupported_capability_type",
+            "supported_types": list(_CAPABILITY_TYPES),
+            "unsupported_types": sorted(set(invalid_types)),
+            "next_action": "Use only supported capability types and retry nexus_map_terrain.",
+        }
 
     if not missing:
         return {
@@ -166,7 +137,7 @@ def map_terrain_payload(
     auto_allowed = (
         auto_invent_if_missing
         and total_cost <= max_development_budget_usdc
-        and all(item["type"].lower() in {"tool", "skill"} for item in missing)
+        and all(item["type"].lower() == "tool" for item in missing)
     )
     return {
         "verdict": "HALT_AND_INVENT",
@@ -175,20 +146,19 @@ def map_terrain_payload(
         "inventory_check": inventory_check,
         "development_plan": {
             "steps": [
-                "1. Synthesize capability specification.",
-                "2. Generate implementation candidate.",
-                "3. Verify in sandbox.",
-                "4. Register in Asset Memory.",
-                "5. Retry original task.",
+                "1. Add or update the missing repo asset in the recommended path.",
+                "2. Add or update tests covering the new asset.",
+                "3. Re-run the relevant verification commands.",
+                "4. Retry the original task with nexus_map_terrain.",
             ],
             "total_estimated_time_seconds": max(30, len(missing) * 60),
-            "auto_invent_triggered": auto_allowed,
+            "auto_invent_eligible": auto_allowed,
         },
         "next_action": "Execute development plan before retrying original task.",
     }
 
 
-def register(mcp: Any, get_client: Callable) -> None:
+def register(mcp: Any, _get_client: Callable) -> None:
     @mcp.tool()
     @handle_errors
     async def nexus_map_terrain(
@@ -199,7 +169,7 @@ def register(mcp: Any, get_client: Callable) -> None:
         auto_invent_if_missing: bool = False,
         invention_constraints: dict[str, Any] | None = None,
     ) -> str:
-        """MAP = TERRAIN gate: halt and invent missing agents, hooks, skills, tools, or harnesses."""
+        """MAP = TERRAIN gate for shipped MCP tools."""
         return _fmt(map_terrain_payload(
             task_description=task_description,
             required_capabilities=required_capabilities,

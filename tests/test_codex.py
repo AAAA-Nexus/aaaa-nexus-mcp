@@ -48,6 +48,12 @@ class TestCodexConstants:
         assert codex.TIER_CLOSURE == 0
         assert codex.RESIDUAL_NORM_LIMIT - codex.TIER1_MIN_COUNT - codex.BLOCK_DIM == 0
 
+    def test_public_codex_source_avoids_raw_anchor_literals(self):
+        source = (SRC / "aaaa_nexus_mcp" / "codex.py").read_text(encoding="utf-8")
+
+        for leaked_value in (str(codex.TIER1_MIN_COUNT), str(codex.RESIDUAL_NORM_LIMIT)):
+            assert leaked_value not in source
+
     def test_tau_trust(self):
         assert codex.TRUST_FLOOR == 1820 / 1823
         assert 0.998 < codex.TRUST_FLOOR < 0.999
