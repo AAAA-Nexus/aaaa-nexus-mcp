@@ -236,11 +236,12 @@ Free tier endpoints that work without a key: `/health`, `/v1/rng/quantum`, `/v1/
 
 ## Documentation
 
+- [docs/MCP_HTTP_SERVER.md](docs/MCP_HTTP_SERVER.md) — **HTTP MCP server** (Streamable HTTP, spec 2025-11-25) — zero-install, 7 core tools, x402 payment, Claude Desktop HTTP config
+- [docs/MCP_CLIENTS.md](docs/MCP_CLIENTS.md) — editor-by-editor setup for the stdio package (Claude, Cursor, VS Code, Zed, Windsurf)
 - [docs/INTEGRATION.md](docs/INTEGRATION.md) — language-by-language integration guide
-- [docs/TOOLS.md](docs/TOOLS.md) — tool index and pricing references for the 135-tool surface
+- [docs/TOOLS.md](docs/TOOLS.md) — tool index and pricing references for the 135-tool stdio surface
 - [docs/LORA_REWARDS.md](docs/LORA_REWARDS.md) — rewards program, leaderboard, prize mechanics
 - [docs/TRUSTED_RAG.md](docs/TRUSTED_RAG.md) — RAG cycle, provenance, receipt format
-- [docs/MCP_CLIENTS.md](docs/MCP_CLIENTS.md) — editor-by-editor setup (Claude, Cursor, VS Code, Zed, Windsurf)
 
 ## Examples
 
